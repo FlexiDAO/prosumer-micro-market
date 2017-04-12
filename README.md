@@ -1,14 +1,16 @@
 # prosumer-micro-market
 
+[_Work in progress_]
+
 First implementation of automated electricity metering and billing based on Ethereum blockchain.
 
-WHAT DOES IT DO?
+**WHAT DOES IT DO?**
 
 An electricity micro-market is a market structure for distributed participants over a feeder of the distribution network (e.g. many households in a neighbourhood connected to the same electrical substation).
 
 In this first version, the market can only execute automated metering of the electrical consumption and generation, and billing the participants accordingly, all based on blockchain. The participants can be prosumers (someone who generates and consumes electricity) or simply consumers.
 
-HOW DOES THE SMART-CONTRACT WORK?
+**HOW DOES THE SMART-CONTRACT WORK?**
 
 Each participant is stored on the blockchain as an "Entity", defined in the smart-contract as new types in the form of structs.
 
@@ -16,7 +18,7 @@ Consumption and generation data is retrieved by each participant's smart-meter e
 
 So far, the price is calculated simply based on total available electricity supply and demand. Future developments will use single and double-sided auctions mechanisms.
 
-HOW DO THE JAVASCRIPT FILES WORK?
+**HOW DO THE JAVASCRIPT FILES WORK?**
 
 The files interacting with the smart-contract are the following: addEntity.js, slave.js, master.js.
 
