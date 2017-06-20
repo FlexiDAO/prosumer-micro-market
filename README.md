@@ -2,32 +2,35 @@
 
 [_Work in progress_]
 
-First implementation of automated electricity metering and billing based on Ethereum blockchain.
-
 **WHAT DOES IT DO?**
 
-An electricity micro-market is a market structure for distributed participants over a feeder of the distribution network (e.g. many households in a neighbourhood connected to the same electrical substation).
+In collaboration with CITCEA and Empower2020, we are designing a decentralised and autonomous electricity trading micro-market for local microgrids.
 
-In this first version, the market can only execute automated metering of the electrical consumption and generation, and billing the participants accordingly, all based on blockchain. The participants can be prosumers (someone who generates and consumes electricity) or simply consumers.
+A micro-market is a market structure for distributed participants over a feeder of the distribution network (a neighborhood connected to the same LV/MV transformer).
 
-**HOW DOES THE SMART-CONTRACT WORK?**
+The objective is to empower local prosumers, keep electricity generation and consumption local to allievate the stress on the distribution grid and encourage distributed energy architecture development by exploiting the unmet consumer preferences in the current system.
 
-Each participant is stored on the blockchain as an "Entity", defined in the smart-contract as new types in the form of structs.
+**MARKET STRUCTURE**
 
-Consumption and generation data is retrieved by each participant's smart-meter every 15 minutes and stored on the blockchain. The smart-contract then checks the production difference of each participants, calculates the price and then executes the billing.
+The design of the micro-market is divided in three parts:
 
-So far, the price is calculated simply based on total available electricity supply and demand. Future developments will use single and double-sided auctions mechanisms.
+o	Day-ahead market: It takes place 24 hours in advance. DER generators can offer and sell their forecasted generation and consumers their load. Demand and supply matching and auction algorithm are implemented and executed by the smart-contract deployed on Ethereum. The clearing price and the amount of scheduled consumption and generation are calculated and sent to the participants of the market.
 
-**HOW DO THE JAVASCRIPT FILES WORK?**
+o	Intra-day balancing market: It takes place 1 hour before the actual start of the power flow. In time-slots of 15 minutes, possible imbalances between supply and demand are solved by another auction market implemented in the smart-contract for both generation and demand-side-response using EVs and flexible loads.  
 
-The files interacting with the smart-contract are the following: addEntity.js, slave.js, master.js.
+o	Real-time metering and billing: After the intra-day market is closed the real power flow for that given hour starts. The actual and real-time power flow is metered, the data is stored on the blockchain and money transfer takes place accordingly using cryptocurrency.
 
-The slave file is executed on the distributed IoT devices, it receives data from the particpant's smart-meter via Modbus and calculates the accumulated consumption and generation data. Upon request all the "slaves" send the data to the blockchain.
+The market structure and the auction algorithm are both implemented in smart-contracts deployed on Ethereum. 
 
-The master file is the "regulator" of the micro-market and coordinates all the distributed IoT devices that are part of the market. Every 15 minutes it sends the request to the "slaves" to send the data to the blockchain (We are aware that by doing this we are introducing a possible single point of failure, but for the simple purpose of development we decided to do this to sync all the different participants without relying on block number and time). When the data is sent, the auction algorithm calculates the clearing price and bills the participants accordingly.
+**ARCHITECTURE**
 
-FUTURE DEVELOPMENTS
+The basic proof-of-concept architecture of the overall system is shown in the following scheme. For ease of representation, only battery and PV panel are showed. The slack point (it could be diesel generator, CHP plant or an over-sized battery) is included because the microgrid is operating in island-mode. The actual microgrid used at UPC will include also small-scale wind turbine, multiple loads and EVs.
 
-1) Use of a customsied cryptocurrency instead of increasing/decresing the entitiy's credit
-2) Double-sided auction algorithm
-3) The market described above will be the day-ahead market based on generation and load forecasts. The imabalances will be handled in the 1-hour-ahed market using flexibility and demand-side-response.
+1- The first layer is the microgrid, where the power flow physically takes place.  
+
+2- The second layer is the Blockchain and Data layer. The Smart Contract hosts the market and acts as regulator. Every participant of the market is equipped with an IoT device that runs a blockchain node (RPi node = Agent) and interacts with the generation/consumption unit. The different operations of this layer are explained previously in the market section.
+  
+3- The third layer is the “money” layer. Each node will have an account used to deposit or receive transactions from the other participants of the microgrid. This happens during real-time operations in 15 minutes time-slots.
+
+The agent is based on open-source technologies and libraries. At the current stage of development these are the main elements of each participant’s IoT device (https://github.com/SolarLibary/ethereum-smartplug)
+ 
